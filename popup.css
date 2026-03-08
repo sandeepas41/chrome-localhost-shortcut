@@ -1,0 +1,394 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 14px;
+  width: 280px;
+  background: #1a1a1a;
+  color: #e0e0e0;
+}
+
+body.has-preview {
+  width: 540px;
+}
+
+#app {
+  display: flex;
+  padding: 8px;
+  gap: 8px;
+}
+
+#list-view {
+  flex: 0 0 264px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* URL List */
+#url-list {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.url-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 10px;
+  background: #2a2a2a;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.15s, opacity 0.15s;
+  position: relative;
+}
+
+/* Drag Handle */
+.drag-handle {
+  cursor: grab;
+  color: #555;
+  font-size: 10px;
+  letter-spacing: -2px;
+  margin-right: 6px;
+  padding: 4px 2px;
+  opacity: 0;
+  transition: opacity 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.url-item:hover .drag-handle {
+  opacity: 1;
+}
+
+.drag-handle:hover {
+  color: #888;
+}
+
+.drag-handle:active {
+  cursor: grabbing;
+}
+
+/* Dragging States */
+.url-item.dragging {
+  opacity: 0.5;
+  transform: scale(0.98);
+  background: #333;
+}
+
+.url-item.drag-over {
+  background: #3a3a3a;
+}
+
+.url-item.drag-over-top::before,
+.url-item.drag-over-bottom::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: #0066cc;
+  border-radius: 1px;
+}
+
+.url-item.drag-over-top::before {
+  top: -3px;
+}
+
+.url-item.drag-over-bottom::after {
+  bottom: -3px;
+}
+
+.url-item:hover {
+  background: #3a3a3a;
+}
+
+.url-item.selected {
+  background: #0066cc;
+}
+
+.shortcut-key {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #444;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 600;
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.url-item.selected .shortcut-key {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.url-item.selected .drag-handle {
+  opacity: 1;
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.url-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.url-label {
+  font-weight: 500;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.url-text {
+  font-size: 11px;
+  color: #888;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.url-item.selected .url-text {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Chevron (group indicator) */
+.chevron {
+  color: #888;
+  font-size: 12px;
+  margin-right: 2px;
+  padding: 2px 4px;
+  flex-shrink: 0;
+  transition: color 0.15s;
+}
+
+.url-item.selected .chevron {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+/* Add Child Button */
+.add-child-btn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  line-height: 1;
+  transition: opacity 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.url-item:hover .add-child-btn {
+  opacity: 1;
+}
+
+.add-child-btn:hover {
+  color: #4dabf7;
+}
+
+/* Edit Button */
+.edit-btn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 13px;
+  line-height: 1;
+  transition: opacity 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.url-item:hover .edit-btn,
+.preview-item:hover .edit-btn {
+  opacity: 1;
+}
+
+.edit-btn:hover {
+  color: #4dabf7;
+}
+
+/* Delete Button */
+.delete-btn {
+  opacity: 0;
+  background: none;
+  border: none;
+  color: #888;
+  cursor: pointer;
+  padding: 4px;
+  font-size: 16px;
+  line-height: 1;
+  transition: opacity 0.15s, color 0.15s;
+}
+
+.url-item:hover .delete-btn {
+  opacity: 1;
+}
+
+.delete-btn:hover {
+  color: #ff6b6b;
+}
+
+/* Children Preview Panel */
+#children-preview {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 1px solid #333;
+  padding-left: 8px;
+  padding-top: 2px;
+}
+
+.preview-item {
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  background: #252525;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.preview-item:hover {
+  background: #333;
+}
+
+.preview-item.selected {
+  background: #0066cc;
+}
+
+.preview-item .url-info {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.preview-item .url-label {
+  font-size: 13px;
+}
+
+.preview-item .url-text {
+  font-size: 11px;
+  color: #888;
+}
+
+.preview-item.selected .url-text {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.preview-item .delete-btn {
+  opacity: 0;
+}
+
+.preview-item:hover .delete-btn {
+  opacity: 1;
+}
+
+/* Empty State */
+#empty-state {
+  text-align: center;
+  padding: 24px 16px;
+  color: #666;
+}
+
+#empty-state .hint {
+  font-size: 12px;
+  margin-top: 4px;
+}
+
+/* Add Button */
+#add-btn {
+  width: 100%;
+  margin-top: 8px;
+  padding: 8px;
+  background: #2a2a2a;
+  border: 1px dashed #444;
+  border-radius: 6px;
+  color: #888;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+#add-btn:hover {
+  background: #333;
+  border-color: #666;
+  color: #e0e0e0;
+}
+
+/* Form View */
+#form-view {
+  width: 264px;
+}
+
+#form-view h3 {
+  margin-bottom: 12px;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+#form-view input {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 8px;
+  background: #2a2a2a;
+  border: 1px solid #444;
+  border-radius: 6px;
+  color: #e0e0e0;
+  font-size: 13px;
+}
+
+#form-view input:focus {
+  outline: none;
+  border-color: #0066cc;
+}
+
+#form-view input::placeholder {
+  color: #666;
+}
+
+.form-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.form-actions button {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+#cancel-btn {
+  background: #333;
+  color: #e0e0e0;
+}
+
+#cancel-btn:hover {
+  background: #444;
+}
+
+#save-btn {
+  background: #0066cc;
+  color: white;
+}
+
+#save-btn:hover {
+  background: #0077ee;
+}
